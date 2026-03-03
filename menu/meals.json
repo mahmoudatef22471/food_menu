@@ -1,0 +1,17 @@
+[
+  { "id": 1,  "name": "Burger",          "price": 120, "category": "Main",     "available": true  },
+  { "id": 2,  "name": "Orange Juice",    "price": 50,  "category": "Drinks",   "available": true  },
+  { "id": 3,  "name": "Grilled Chicken", "price": 150, "category": "Main",     "available": true  },
+  { "id": 4,  "name": "Caesar Salad",    "price": 80,  "category": "Salads",   "available": false },
+  { "id": 5,  "name": "Pepsi",           "price": 30,  "category": "Drinks",   "available": true  },
+  { "id": 6,  "name": "Pasta Bolognese", "price": 130, "category": "Main",     "available": true  },
+  { "id": 7,  "name": "Mango Juice",     "price": 60,  "category": "Drinks",   "available": false },
+  { "id": 8,  "name": "French Fries",    "price": 45,  "category": "Sides",    "available": true  },
+  { "id": 9,  "name": "Grilled Fish",    "price": 180, "category": "Main",     "available": true  },
+  { "id": 10, "name": "Greek Salad",     "price": 75,  "category": "Salads",   "available": true  },
+  { "id": 11, "name": "Chocolate Cake",  "price": 65,  "category": "Desserts", "available": true  },
+  { "id": 12, "name": "Ice Cream",       "price": 40,  "category": "Desserts", "available": false },
+  { "id": 13, "name": "Onion Rings",     "price": 50,  "category": "Sides",    "available": true  },
+  { "id": 14, "name": "Lemon Mint",      "price": 55,  "category": "Drinks",   "available": true  },
+  { "id": 15, "name": "Kofta",           "price": 110, "category": "Main",     "available": true  }
+]
