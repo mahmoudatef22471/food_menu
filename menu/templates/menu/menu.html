@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mahmoud's Kitchen</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 720px;
+      margin: 30px auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 20px 24px 30px;
+    }
+
+    /* ── Title ── */
+    h1 {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 14px;
+      color: #111;
+    }
+
+    /* ── Filter row ── */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .filter-row input[type="text"] {
+      padding: 5px 8px;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      width: 160px;
+      outline: none;
+    }
+    .filter-row input[type="text"]:focus {
+      border-color: #888;
+    }
+
+    .filter-row select {
+      padding: 5px 8px;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-row select:focus {
+      border-color: #888;
+    }
+
+    .filter-row button {
+      padding: 5px 14px;
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #333;
+    }
+    .filter-row button:hover {
+      background: #f0f0f0;
+    }
+
+    /* ── Meal list ── */
+    .meal-list {
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .meal-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .meal-name {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #111;
+      margin-bottom: 4px;
+    }
+
+    .meal-meta {
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.7;
+    }
+
+    .meal-meta span {
+      display: block;
+    }
+
+    /* Available = green, Unavailable = red — matching screenshot */
+    .available {
+      color: #2e7d32;
+      font-weight: 500;
+    }
+    .unavailable {
+      color: #c62828;
+      font-weight: 500;
+    }
+
+    /* ── Empty state ── */
+    .no-results {
+      padding: 20px 0;
+      color: #888;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Title -->
+  <h1>Mahmoud's Kitchen</h1>
+
+  <!-- Filter form — exactly as in screenshot: text box | dropdown | Search button -->
+  <form class="filter-row" method="GET" action="">
+    <input
+      type="text"
+      name="name"
+      placeholder=""
+      value="{{ search_name }}"
+    />
+
+    <select name="category">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>
+          {{ cat }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <button type="submit">Search</button>
+  </form>
+
+  <!-- Meal list -->
+  <div class="meal-list">
+    {% if meals %}
+      {% for meal in meals %}
+        <div class="meal-item">
+          <div class="meal-name">{{ meal.name }}</div>
+          <div class="meal-meta">
+            <span>Category: {{ meal.category }}</span>
+            <span>Price: {{ meal.price }} EGP</span>
+            {% if meal.available %}
+              <span class="available">Available ✅</span>
+            {% else %}
+              <span class="unavailable">Not Available ❌</span>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="no-results">No meals found.</div>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>
