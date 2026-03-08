@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Courses - Institute Management</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'courses/css/style.css' %}">
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading Courses...</p>
+    </div>
+        <div class="header-content">
+            <div class="logo">🏫 Institute Management</div>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/students/">Students</a></li>
+                    <li><a href="/Instructors/">Instructors</a></li>
+                    <li><a href="/courses/">Courses</a></li>
+                    <li><a href="/admin/">Admin</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="favorites-btn" id="favorites-toggle">
+                    <i class="fas fa-heart"></i> Favorites <span id="favorites-count">0</span>
+                </button>
+                <button class="theme-toggle" id="theme-toggle">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="/">Home</a> > <span>Courses</span>
+    </div>
+        <div class="search-container">
+            <input type="text" id="course-search" placeholder="Search courses..." class="search-input">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div class="courses-grid" id="courses-grid">
+            {% for course in courses %}
+                <div class="course">
+                    <h2>{{ course.name }}</h2>
+                    <p class="instructor"><strong>Instructor:</strong> {{ course.instructor.name }}</p>
+                    <p class="students">
+                        <strong>Students:</strong>
+                        {% if course.students.all %}
+                            {% for student in course.students.all %}
+                                {{ student.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="no-students">No students enrolled</span>
+                        {% endif %}
+                    </p>
+                    <div class="course-stats">
+                        <div class="stat">
+                            <div class="stat-number">{{ course.students.count }}</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">1</div>
+                            <div class="stat-label">Instructor</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Course Details Modal -->
+    <div id="course-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3><i class="fas fa-user-tie"></i> Instructor</h3>
+                    <p id="modal-instructor"></p>
+                </div>
+                <div class="modal-section">
+                    <h3><i class="fas fa-users"></i> Enrolled Students</h3>
+                    <p id="modal-students"></p>
+                </div>
+                <div class="modal-section">
+                    <h3><i class="fas fa-chart-bar"></i> Course Statistics</h3>
+                    <div class="modal-stats">
+                        <div class="modal-stat">
+                            <span class="stat-number" id="modal-student-count"></span>
+                            <span class="stat-label">Students</span>
+                        </div>
+                        <div class="modal-stat">
+                            <span class="stat-number">1</span>
+                            <span class="stat-label">Instructor</span>
+                        </div>
+                        <div class="modal-stat">
+                            <span class="stat-number" id="modal-duration">12</span>
+                            <span class="stat-label">Weeks</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="enroll-btn">Enroll Now</button>
+                    <button class="btn btn-secondary" id="favorite-btn">
+                        <i class="fas fa-heart"></i> Add to Favorites
+                    </button>
+                    <button class="btn btn-secondary">View Syllabus</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Institute Management</h3>
+                <p>Empowering education through innovative technology.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/students/">Students</a></li>
+                    <li><a href="/Instructors/">Instructors</a></li>
+                    <li><a href="/courses/">Courses</a></li>
+                    <li><a href="/admin/">Admin</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <div class="newsletter">
+                    <input type="email" placeholder="Enter your email" id="newsletter-email">
+                    <button class="btn btn-primary" id="subscribe-btn">Subscribe</button>
+                </div>
+                <p>Stay updated with latest courses and news.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Institute Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen
+            setTimeout(() => {
+                const loading = document.getElementById('loading');
+                loading.classList.add('hide');
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                }, 500);
+            }, 1000);
+            const courses = document.querySelectorAll('.course');
+            courses.forEach((course, index) => {
+                course.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Theme toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            // Check for saved theme preference or default to light mode
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            if (currentTheme === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            }
+
+            themeToggle.addEventListener('click', function() {
+                body.classList.toggle('dark-mode');
+                const theme = body.classList.contains('dark-mode') ? 'dark' : 'light';
+                localStorage.setItem('theme', theme);
+                themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('course-search');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                courses.forEach(course => {
+                    const courseName = course.querySelector('h2').textContent.toLowerCase();
+                    if (courseName.includes(searchTerm)) {
+                        course.style.display = 'block';
+                        course.style.opacity = '1';
+                        course.style.transform = 'translateY(0)';
+                    } else {
+                        course.style.display = 'none';
+                    }
+                });
+            });
+
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            courses.forEach(course => {
+                course.style.opacity = '0';
+                course.style.transform = 'translateY(30px)';
+                course.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(course);
+            });
+
+            // Scroll to top button
+            const scrollToTopBtn = document.getElementById('scroll-to-top');
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.style.display = 'block';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
+                }
+            });
+
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Modal functionality
+            const modal = document.getElementById('course-modal');
+            const closeModal = document.querySelector('.close-modal');
+
+            courses.forEach(course => {
+                course.addEventListener('click', function() {
+                    const title = this.querySelector('h2').textContent.replace('📚 ', '');
+                    const instructor = this.querySelector('.instructor strong').nextSibling.textContent.trim();
+                    const studentsText = this.querySelector('.students strong').nextSibling.textContent.trim();
+                    const studentCount = this.querySelector('.stat-number').textContent;
+
+                    document.getElementById('modal-title').textContent = title;
+                    document.getElementById('modal-instructor').textContent = instructor;
+                    document.getElementById('modal-students').textContent = studentsText;
+                    document.getElementById('modal-student-count').textContent = studentCount;
+
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Favorites functionality
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const favoritesCount = document.getElementById('favorites-count');
+            const favoriteBtn = document.getElementById('favorite-btn');
+            const favoritesToggle = document.getElementById('favorites-toggle');
+
+            function updateFavoritesCount() {
+                favoritesCount.textContent = favorites.length;
+            }
+            updateFavoritesCount();
+
+            favoriteBtn.addEventListener('click', function() {
+                const courseTitle = document.getElementById('modal-title').textContent;
+                if (favorites.includes(courseTitle)) {
+                    favorites = favorites.filter(fav => fav !== courseTitle);
+                    this.innerHTML = '<i class="fas fa-heart"></i> Add to Favorites';
+                    this.classList.remove('favorited');
+                } else {
+                    favorites.push(courseTitle);
+                    this.innerHTML = '<i class="fas fa-heart"></i> Remove from Favorites';
+                    this.classList.add('favorited');
+                    showToast('Added to favorites!', 'success');
+                }
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                updateFavoritesCount();
+            });
+
+            // Newsletter subscription
+            const subscribeBtn = document.getElementById('subscribe-btn');
+            subscribeBtn.addEventListener('click', function() {
+                const email = document.getElementById('newsletter-email').value;
+                if (email) {
+                    showToast('Subscribed successfully!', 'success');
+                    document.getElementById('newsletter-email').value = '';
+                } else {
+                    showToast('Please enter a valid email.', 'error');
+                }
+            });
+
+            // Toast notification system
+            function showToast(message, type) {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 100);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
